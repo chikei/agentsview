@@ -1,5 +1,5 @@
 ---
-last_edited: 2026-10-26
+last_edited: 2026-10-29
 ---
 
 # Session Format Source Inventory
@@ -2913,6 +2913,28 @@ schemas keep their existing ordering behavior.
     [skill protocol](https://github.com/can1357/oh-my-pi/blob/39c95e5e29b1c8b082059f57421ce445c3dffdd4/packages/coding-agent/src/internal-urls/skill-protocol.ts)
     and
     [shell URL resolver](https://github.com/can1357/oh-my-pi/blob/39c95e5e29b1c8b082059f57421ce445c3dffdd4/packages/coding-agent/src/tools/bash-skill-urls.ts).
+
+- **Parent format (2026-10-29):** Reverified against the
+  [producer change](https://github.com/can1357/oh-my-pi/commit/ababe481f1d3137b681b5c61f89f67541628507b),
+  [mainline merge](https://github.com/can1357/oh-my-pi/commit/34f8df5103ecbb63838b0af7aaf5b0818383f7a8),
+  and [v18.2.1 release](https://github.com/can1357/oh-my-pi/releases/tag/v18.2.1).
+  Ordinary task children previously omitted `parentSession`; fresh children
+  with a persisted parent now store the parent transcript's path. Reopening a
+  child preserves its existing header. The session format stays at version 3.
+  Other fork and context-copy paths can store a raw parent ID, as shown by the
+  pinned
+  [session manager](https://github.com/can1357/oh-my-pi/blob/39c95e5e29b1c8b082059f57421ce445c3dffdd4/packages/coding-agent/src/session/session-manager.ts).
+
+- **Lineage resolution:** Agentsview preserves raw parent IDs and resolves
+  path-valued parents through valid transcript headers, including leading title
+  slots and V1 filename identities. Matching local parents can resolve stale
+  paths after a session tree moves. Nested transcripts with a valid structural
+  parent are classified as subagents whether their header supplies a parent or
+  not; explicit lineage takes precedence over directory evidence. Missing,
+  malformed, or non-session path targets stay unresolved instead of becoming
+  filename-derived IDs, and the child transcript is retained. Data version 152
+  reparses available OMP sources in place without changing session or source
+  identities. Sources that are unavailable stay preserved.
 
 - **Usage and cost:** Pi-family usage persists input, output, cache-read, and
   cache-write tokens with a model. Agentsview derives monetary cost from the
